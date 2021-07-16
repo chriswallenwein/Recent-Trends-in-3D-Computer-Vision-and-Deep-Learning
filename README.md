@@ -16,14 +16,14 @@ Transparent object reconstruction has been studied for more than 30 years [17]. 
 The foundation of most research is the vast array of knowledge in the field of optics. The authors use this knowledge to formulate their mathematical models and improve them utilizing one manifestation of optimization algorithms. Recent research [3,4] uses synthetic datasets to overcome the hurdle of acquiring enough training data. This comes at the cost of a mismatch between the performance on real world data compared to sythetic datasets. When testing on real world data, these approaches typically require a complicated setup including multiple cameras taking images from various fixed viewpoints.
 A paper from 2018 by Wu et al. [4] captures 22 images of the transparent object in front of predefined background patterns. The camera viewpoints are fixed, but the transparent object rotates on a turntable. 
 
-The underlying optics concepts used in physics-based papers are fundamental to understand "Through the looking glass". The section [Overview of optics fundamentals](#optics-fundamentals) will introduce these topics.
+The underlying optics concepts used in physics-based papers are fundamental to understand "Through the looking glass". The section [Overview of optics fundamentals](#Optics-fundamentals) will introduce these topics.
 
 ## Deep Learning-based approaches [almost done]
 The setup of deep learning based approaches is usually simpler. Using RGB [5]/RGB-D[6] images of the transparent object, models learn to predict e.g. the segmentation mask, the depth map and surface normals. These models are typically based on Encoder-Decoder CNNs. Deep learning methods inherently need far more data and therefore also leverage synthetic datasets. 
 
 
 
-# Important concepts [work in progress]
+# Important concepts [almost done]
 Prior to introducing the proposed methods some basic concepts from the fields of optics and 3D graphics shall be clarified. 
 ## Normals and color mapping [almost done]
 A normal is a vector that is perpendicular to some object. A surface normal is a vector that is perpendicular to a surface and it can be represented like any other vector $[X,Y,Z]$.
@@ -37,14 +37,14 @@ Light propagates on straight paths through  vacuum, air and homogeneous transpar
 
 
 
-# Proposed method [work in progress]
+# Proposed method
 ## Problem setup [work in progress]
 2-bounce assumption
 
 
 What do N^1 and N^2 exactly mean? What does one pixel in N^1/N^2 mean?
 
-As input, the model requires a small number of unconstrained images of the transparent object and the corresponding segmentation masks for all images. It also needs the environment map and the index of refraction of the material of the transparent object.
+As input, the model requires a small number of unconstrained images of the transparent object and the corresponding silhouette segmentation masks for all images. It also needs the environment map and the index of refraction of the material of the transparent object.
 The approach usually returns good results with just 10 input images, but some more complex shapes might need 12 input images.
 
 ## Overview [almost done]
@@ -78,7 +78,7 @@ To estimate the surface normals an encoder-decoder CNN is used. The cost volume 
 * the total internal reflection mask
 * the rendering error
 
-and feed everything to the encoder - decoder CNN. [insert loss function here] is used as the loss function. It is simply the L2 distance between the estimated normals and the ground truth normals.
+and feed everything to the encoder - decoder CNN. $L_N=\vert N^1 - \hat{N^1}\vert ^2 + \vert N^2 - \hat{N^2}\vert^2$ is used as the loss function. It is simply the $L^2$ distance between the estimated normals ($N^1, N^2$) and the ground truth normals ($\hat{N^1}, \hat{N^2}$).
 
 ## Point cloud reconstruction [almost done]
 The normal prediction network gives important information about the transparent object from different viewing angles. But somehow the features in the different views have to be matched with the points in the point cloud. Subsequently, a modified PointNet++ [Quelle!!]  will predict the final point locations and final normal vectors for each point in the point cloud. Finally the 3D point cloud will be transformed into a mesh by applying poisson surface reconstruction. [
@@ -86,30 +86,33 @@ Michael Kazhdan, M. Bolitho, and Hugues Hoppe. Poisson Surface Reconstruction. I
 
 
 ### Feature mapping [almost done]
-The goal of feature mapping is to assign features to each point in the initial point cloud. In particular, these features are the normal at that point, the rendering error and the total internal reflection mask. The
+The goal of feature mapping is to assign features to each point in the initial point cloud. In particular, these features are the normal at that point, the rendering error, the total internal reflection mask and a confidence score. The closer a point is to the center of the image, the higher the confidence for it to be correct [ask tutor if this explanation is enough]. The features are known for each viewpoint but not for the points in the point cloud. A point of the point cloud can be mapped from 3D-space to the 2D point of each viewpoint to retrieve the necessary information. In some cases, a point might not be visible from a particular angle, if so, it will not be taken into account during feature mapping. For each point there are usually 10 different views and sets of features. It now has to be decided, which views to take into account when creating the feature vectors. The authors try three different feature mapping approaches:
 
-[ich möchte hier noch erklären, dass es sehr einfach ist von einem 3D-Punkt des shapes den 2D Punkt in den Bilder/normal maps herauszufinden, weil wir die Viewpoints der Bilder kennen]
-Map point in 3D space onto each image to figure out the value at this point.
-
-In some cases, a point might not be visible from a particular angle, if so, it will not be taken into account during feature mapping. For each point there are usually 10 different views and sets of features. It now has to be decided, which views to take into account when creating the feature vectors. The authors try three different feature mapping approaches:
-
-#### Rendering error based view selection [work in progress]
-Select the view with the lowest rendering error
-#### Nearest view [work in progress]
-Select the nearest view
-#### Average fusion [work in progress]
-Average the information over all views
+#### Rendering error based view selection [almost done]
+Selects the view with the lowest rendering error.
+#### Nearest view [almost done]
+Selects the nearest view based on the confidence score.
+#### Average fusion [almost done]
+Averages the information over all views.
 
 ### Modified PointNet++ [almost done]
-Given the mapped features, PointNet++ performs point cloud reconstruction. It predicts the final point cloud and the corresponding normals. The authors were able to improve the predictions by modifying the PointNet++ architecture. In particular, they replaced max-pooling with average pooling, passed the front and back normals to all skip connections and applied feature augmentation. See [evaluation] for a quantitative comparison between the out-of the box PointNet++ architecture and the modified version.
+Given the mapped features and the initial point cloud, PointNet++ predicts the final point cloud and the corresponding normals. The authors were able to improve the predictions by modifying the PointNet++ architecture. In particular, they replaced max-pooling with average pooling, passed the front and back normals to all skip connections and applied feature augmentation. [evaluation] gives a quantitative comparison between the out-of the box PointNet++ architecture and the modified version. [don't forget to make this comparison]
 
-To get the best results, the authors try three different loss functions:
-#### Nearest view based loss [work in progress]
+To get the best results, the authors try three different loss functions.
+The different summands in the following formulas have differnt weights assigned to them
+#### Nearest $L_2$ loss: $L_P^{nearest}$ [work in progress]
+$L_P^{nearest}=\sum\limits_{\{p\},\{N\}}$
 
-#### View dependent loss [work in progress]
+Weighted sum
 
-#### Chamfer distance loss [work in progress]
-The chamfer distance is a distance measure between 2 point clouds
+This loss function is calculating the $L^2$ distance between the ground truth and the predictions for the all points and normals. The ground truth for a particular point $p$ and normal $N$ is defined as the closest point in $p$ of the ground truth
+
+#### View dependent $L_2$ loss: $L_P^{view}$ [work in progress]
+[add formula]
+
+#### Chamfer distance loss: $L_P^{CD}$ [work in progress]
+[add formula]
+The chamfer distance can be used to measure the distance between 2 point clouds.
  
 ### Poisson surface reconstruction [almost done]
 Poisson surface reconstruction was first introduced in 2006 [quelle!] and is still used in recent papers. It takes a point cloud and surface normal estimations for each point of the point cloud and reconstructs the 3D mesh of the object.
@@ -117,19 +120,34 @@ Poisson surface reconstruction was first introduced in 2006 [quelle!] and is sti
 
 
 # Evaluation [work in progress]
-## Qualitative results [work in progress]
-While comparing the ground truth to the reconstructed objects, we can see that the quality of the reconstructions are already really good. At first sight, the scenes look reasonable and no big differences between ground truth and reconstructions are visible.
+## Qualitative results [almost done]
+
+![](https://i.imgur.com/ELmYXsF.gif)
+At first sight, the quality of the reconstructions looks really good. The
+scenes look reasonable and no big differences between ground truth and reconstructions are visible.
+
+
 
 ## Quantitative results [work in progress]
 As described earlier, the authors try three different loss functions and three different view-selection strategies. The best combination of loss function and view selection is the rendering error-based view selection with a chamfer distance loss. It achieves the best results across all metrics and greatly improves the visual hull initialized reconstruction (vh10).
 
 
+| Column 1 | Column 2 | Column 3 |
+| -------- | -------- | -------- |
+| Text     | Text     | Text     |
+| Text     | Text     | Text     |
+
+
+
 In Table 3 the authors examine the effect of parts of their approach using different metrics. The first column shows the visual hull initialized reconstruction, the second column shows that bare minimum of the model. It’s simply the basic encoder-decoder CNN, but without the total internal reflection mask and the rendering error map as input. And without the cost volume and latent vector optimization. The last column measures the different metrics for a model with all these optimizations: Total internal reflection mask and rendering error map are taken into account, cost volume and latent vector optimization are applied.
 
 ## Testing the model on real world data [work in progress]
-Many papers on 3D reconstruction of transparent shapes use synthetic datasets. While this speeds up the acquisition of training data and reduces cost, it often leads to models that perform well on the synthetic dataset, but can’t generalize as easily to real world data. Before we compare both … I will first explain how to test the model on real world data.Taking the images of the transparent objects is pretty straight-forward, you can simply use commodity hardware like the camera in your smartphone. The other inputs are not as easy to aquire. When the authors tested their model, they created the segmentation masks manually. You might want to check out the paper “Segmenting Transparent Objects in the Wild” [7] or its successor that uses transformers [9]. The code is available here [8] and [9a]. Back to the inputs.
+To test the model on real world data.Taking the images of the transparent objects is pretty straight-forward, you can simply use commodity hardware like the camera in your smartphone. The other inputs are not as easy to aquire. When the authors tested their model, they created the segmentation masks manually. You might want to check out the paper “Segmenting Transparent Objects in the Wild” [7] or its successor that uses transformers [9]. The code is available here [8] and [9a]. Back to the inputs.
+
+Many papers on 3D reconstruction of transparent shapes use synthetic datasets. While this speeds up the acquisition of training data and reduces cost, it often leads to models that perform well on the synthetic dataset, but can’t generalize as easily to real world data. 
+
 mirror sphere for environment map
-COLMAP for viewpoint
+Based on the image alone, COLMAP [Quelle] for viewpoint
 Real world data:
 How is the environment map captured
 How to determine the viewing angle just with images?

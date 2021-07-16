@@ -16,7 +16,7 @@ Transparent object reconstruction has been studied for more than 30 years [17]. 
 The foundation of most research is the vast array of knowledge in the field of optics. The authors use this knowledge to formulate their mathematical models and improve them utilizing one manifestation of optimization algorithms. Recent research [3,4] uses synthetic datasets to overcome the hurdle of acquiring enough training data. This comes at the cost of a mismatch between the performance on real world data compared to sythetic datasets. When testing on real world data, these approaches typically require a complicated setup including multiple cameras taking images from various fixed viewpoints.
 A paper from 2018 by Wu et al. [4] captures 22 images of the transparent object in front of predefined background patterns. The camera viewpoints are fixed, but the transparent object rotates on a turntable. 
 
-The underlying optics concepts used in physics-based papers are fundamental to understand "Through the looking glass". The section [Overview of optics fundamentals](#Optics-fundamentals) will introduce these topics.
+The underlying optics concepts used in physics-based papers are fundamental to understand "Through the looking glass". The section [Overview of optics fundamentals](#optics-fundamentals) will introduce these topics.
 
 ## Deep Learning-based approaches [almost done]
 The setup of deep learning based approaches is usually simpler. Using RGB [5]/RGB-D[6] images of the transparent object, models learn to predict e.g. the segmentation mask, the depth map and surface normals. These models are typically based on Encoder-Decoder CNNs. Deep learning methods inherently need far more data and therefore also leverage synthetic datasets. 

@@ -129,15 +129,54 @@ scenes look reasonable and no big differences between ground truth and reconstru
 
 
 ## Quantitative results [work in progress]
-As described earlier, the authors try three different loss functions and three different view-selection strategies. The best combination of loss function and view selection is the rendering error-based view selection with a chamfer distance loss. It achieves the best results across all metrics and greatly improves the visual hull initialized reconstruction (vh10).
+As described earlier, the authors try three different loss functions and three different view-selection strategies. The best combination of loss function and view selection is the rendering error-based view selection with a chamfer distance loss $(\text{RE-} \mathcal{L}_P^{\text{CD}})$. It achieves the best results across all metrics and greatly improves the visual hull initialized reconstruction $(\text{vh10})$.
 
 
-| Column 1 | Column 2 | Column 3 |
-| -------- | -------- | -------- |
-| Text     | Text     | Text     |
-| Text     | Text     | Text     |
+
+| | $\text{CD}(10^{-4})$ | $\text{CDN-mean}(^{\circ})$ | $\text{CDN-med}(^{\circ})$ | $\text{Metro}(10^{-3})$ |
+| ------------------------------------------ | ----- | ----- | ----- | ----- |
+| $\text{vh10}$                              | 5.14  | 7.19  | 4.90  | 15.2  |
+| $\text{RE-} \mathcal{L}_P^{\text{nearest}}$| 2.17  | 6.23  | 4.50  | 7.07  |
+| $\text{RE-} \mathcal{L}_P^{\text{view}}$   | 2.15  | 6.51  | 4.76  | 6.79  |
+| $\text{RE-} \mathcal{L}_P^{\text{CD}}$     |<b>2.00|<b>6.02|<b>4.38|<b>5.98|
+| $\text{NE-} \mathcal{L}_P^{\text{CD}}$     | 2.04  | 6.10  | 4.46  | 6.02  |
+| $\text{AV-} \mathcal{L}_P^{\text{CD}}$     | 2.03  | 6.08  | 4.46  | 6.09  |
+| $\text{PSR}$                               | 5.13  | 6.94  | 4.75  | 14.7  |
+:::info
+Table 3: Comparison of different loss functions and view selection strategies
+:::
 
 
+
+______
+| | $\text{CD}(10^{-4})$ | $\text{CDN-mean}(^{\circ})$ | $\text{CDN-med}(^{\circ})$ | $\text{Metro}(10^{-3})$ |
+| ------------------------------------------ | ----- | ----- | ----- | ----- |
+| $\text{vh10}$                              | 5.14  | 7.19  | 4.90  | 15.2  |
+| $\text{RE-} \mathcal{L}_P^{\text{nearest}}$| 2.17  | 6.23  | 4.50  | 7.07  |
+| $\text{RE-} \mathcal{L}_P^{\text{view}}$   | 2.15  | 6.51  | 4.76  | 6.79  |
+| $\text{RE-} \mathcal{L}_P^{\text{CD}}$     |<b>2.00|<b>6.02|<b>4.38|<b>5.98|
+| $\text{NE-} \mathcal{L}_P^{\text{CD}}$     | 2.04  | 6.10  | 4.46  | 6.02  |
+| $\text{AV-} \mathcal{L}_P^{\text{CD}}$     | 2.03  | 6.08  | 4.46  | 6.09  |
+| $\text{PSR}$                               | 5.13  | 6.94  | 4.75  | 14.7  |
+
+Table 3: Comparison of different loss functions and view selection strategies
+______
+
+
+
+
+
+
+| | $\text{CD}(10^{-4})$ | $\text{CDN-mean}(^{\circ})$ | $\text{CDN-med}(^{\circ})$ | $\text{Metro}(10^{-3})$ |
+| ------------------------------------------ | ----- | ----- | ----- | ----- |
+| $\text{vh10}$                              | 5.14  | 7.19  | 4.90  | 15.2  |
+| $\text{RE-} \mathcal{L}_P^{\text{nearest}}$| 2.17  | 6.23  | 4.50  | 7.07  |
+| $\text{RE-} \mathcal{L}_P^{\text{view}}$   | 2.15  | 6.51  | 4.76  | 6.79  |
+| $\text{RE-} \mathcal{L}_P^{\text{CD}}$     |<b>2.00|<b>6.02|<b>4.38|<b>5.98|
+| $\text{NE-} \mathcal{L}_P^{\text{CD}}$     | 2.04  | 6.10  | 4.46  | 6.02  |
+| $\text{AV-} \mathcal{L}_P^{\text{CD}}$     | 2.03  | 6.08  | 4.46  | 6.09  |
+| $\text{PSR}$                               | 5.13  | 6.94  | 4.75  | 14.7  |
+###### Table 3: Comparison of different loss functions and view selection strategies
 
 In Table 3 the authors examine the effect of parts of their approach using different metrics. The first column shows the visual hull initialized reconstruction, the second column shows that bare minimum of the model. It’s simply the basic encoder-decoder CNN, but without the total internal reflection mask and the rendering error map as input. And without the cost volume and latent vector optimization. The last column measures the different metrics for a model with all these optimizations: Total internal reflection mask and rendering error map are taken into account, cost volume and latent vector optimization are applied.
 
